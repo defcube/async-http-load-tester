@@ -13,6 +13,9 @@ def _url(url):
     return url
 parser = argparse.ArgumentParser()
 parser.add_argument('site_to_test', type=_url, help='URL of site to test, starting with http://')
+parser.add_argument('--max-simultaneous', '-m', type=int, default=50, dest='max_simultaneous')
+parser.add_argument('--step', '-s', type=int, default=10, dest='step')
 args = parser.parse_args()
-results = async_http_load_tester.perform_load_test(args.site_to_test)
+results = async_http_load_tester.perform_load_test(args.site_to_test, args.max_simultaneous,
+                                                   args.step)
 print("Final Results: {0}".format(results))

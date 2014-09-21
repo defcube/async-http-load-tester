@@ -1,4 +1,5 @@
 import asyncio
+import itertools
 import time
 
 import aiohttp
@@ -7,13 +8,8 @@ event_loop = asyncio.get_event_loop()
 """ :type: AbstractEventLoop """
 
 
-def perform_load_test(url):
-    print("hi")
-    # #######################################################
-    # from IPython import embed; embed()
-    # import sys; sys.exit()
-    # #######################################################
-    for i in range(1, 10, 1):
+def perform_load_test(url, max_simultaneous, step):
+    for i in itertools.chain((1,), range(step, max_simultaneous + 1, step)):
         duration = run_simultaneous_loads(url, i)
         per_second = float(i) / duration
         print("{0} Threads = Duration: {1} | Per Second: {2}".format(i, duration, per_second))
@@ -39,6 +35,8 @@ def run_simultaneous_loads(url, num_simultaneous):
 
 @asyncio.coroutine
 def run_individual_load(url):
-    result = yield from aiohttp.request('GET', url)
-    html = yield from result.read()
-    return html
+    try:
+        result = yield from asyncio.wait_for(aiohttp.request('GET', url), 1)
+        yield from asyncio.wait_for(result.read(), 1)
+    except asyncio.TimeoutError:
+        pass
