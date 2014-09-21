@@ -13,7 +13,6 @@ def perform_load_test(url, max_simultaneous, step):
         duration = run_simultaneous_loads(url, i)
         per_second = float(i) / duration
         print("{0} Threads = Duration: {1} | Per Second: {2}".format(i, duration, per_second))
-    return "foo"
 
 
 def run_simultaneous_loads(url, num_simultaneous):
